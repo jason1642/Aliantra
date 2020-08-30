@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Route } from 'react-router-dom'
 import HomePage from '../HomePage/HomePage.jsx'
 import axios from 'axios'
+import MarketsBox from '../MarketsBox/MarketsBox.jsx';
 
 
 
@@ -11,7 +12,7 @@ class Container extends Component {
   constructor() {
     super()
     this.state = {
-
+      etfFour: []
     }
   }
   async componentDidMount() {
@@ -21,19 +22,32 @@ class Container extends Component {
 
 
 
-    const TIINGO_API_KEY = '458b98b2a987d2fba65f5be43ca8f1090488992b'
-    const TIINGO_DOMAIN = 'https://api.tiingo.com/tiingo/daily/aapl?token='
-    let marketArr = []
+    const IEX_API_KEY = 'pk_3256652724eb490abdfd234401050f50'
+    const IEX_DOMAIN = 'https://cloud.iexapis.com/v1/stock/'
     const marketSymbols = ['SPY', 'QQQ', 'IWM', 'DIA']
-    // marketSymbols.forEach(async function (e) {
-    //   const marketResponse = await axios(`${TIINGO_DOMAIN}${e}?token=${TIINGO_API_KEY}`)
-    //   marketArr.push(marketResponse.data)
-    // })
-    // const marketResponse = await axios(`${TIINGO_DOMAIN}${TIINGO_API_KEY}`)
-    // console.log(marketResponse)
+    // marketSymbols.forEach(async (e) => {
+    //   await axios(`${IEX_DOMAIN}${e}/company?token=${IEX_API_KEY}`).then(response => {
+    //     // handle success
+    //     this.state.etfFour.push(response.data)
+    //     console.log(response);
+    //   })
+
+
+    marketSymbols.forEach(async (e) => {
+      let resp = await axios(`${IEX_DOMAIN}${e}/company?token=${IEX_API_KEY}`)
+      // handle success
+      this.state.etfFour.push(resp.data)
+      console.log(resp);
 
 
 
+
+
+
+      //   .then(
+      // this.state.etfFour.push(marketResponse.data))
+    })
+    // console.log(this.state.etfFour)
 
 
 
@@ -50,7 +64,12 @@ class Container extends Component {
   }
   render() {
     return (<>
-      <Route render={() => <HomePage stockAPI={this.state.stockAPI} />} />
+      {/* <Route render={() => <HomePage stockAPI={this.state.stockAPI} />} /> */}
+      {
+        this.state.etfFour !== [] ?
+          < Route render={routerProps => <MarketsBox etfArray={this.state.etfFour} {...routerProps} />} />
+          : <></>
+      }
     </>
     );
   }
